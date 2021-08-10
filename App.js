@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, {useState} from 'react';
-import { StyleSheet, TouchableOpacity, Text, FlatList, TextInput } from 'react-native';
+import { StyleSheet, TouchableOpacity, Text, FlatList, TextInput, Keyboard } from 'react-native';
 import Button from './components/Button';
 import Todo from './components/Todo';
 
@@ -11,6 +11,7 @@ export default function App() {
     {todo: 'Long press for delete', completed: false},
   ])
   const [text, settext] = useState('')
+
   // Traer datos de una API jsonplacerholder
   // const fetchData = async() => {
   //   const response = await axios.get('https://jsonplaceholder.typicode.com/posts')
@@ -22,9 +23,11 @@ export default function App() {
     settext(val)
   }
   const addTodo = (todo) => {
-    const existsTodo = todos.find(x => x.todo === todo)
+    const existsTodo = todos.find(x => x.todo === todo) //Search todo typed in todo list
     if(!existsTodo){
-      settodos(todos.concat({todo: todo, completed:false}))  
+      settodos(todos.concat({todo: todo, completed:false})) //If todo exists don't create todo
+      Keyboard.dismiss() //If todo don't exists, create todo, clear textinput and keyboard down
+      settext('')
     }else {
       alert('This todo is already exists')
       return
@@ -51,8 +54,8 @@ export default function App() {
             </Todo>
           } 
         />
-      <TextInput placeholder='Type New Todo...' style={styles.input} onChangeText={changeText}/>
-      <Button onPress={()=>addTodo(text)}>Add Todo</Button>
+      <TextInput placeholder='Type New Todo...' style={styles.input} onChangeText={changeText} value={text}/>
+      <Button onPress={()=> addTodo(text)}>Add Todo</Button>
       <StatusBar style="auto" />
     </TouchableOpacity>
   );
