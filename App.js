@@ -1,37 +1,50 @@
 import { StatusBar } from 'expo-status-bar';
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import { StyleSheet, TouchableOpacity, Text, FlatList, TextInput, Keyboard } from 'react-native';
 import Button from './components/Button';
 import Todo from './components/Todo';
+import { createTable, addTodo, getTodos } from "./database/Database";
+
 
 export default function App() {
+
+  useEffect(() => {
+    createTable()
+    fetchTodos()
+  }, [])
+
   const [todos, settodos] = useState([
     {todo: 'Example of Todo', completed: false},
     {todo: 'Press for complete' ,completed: false},
     {todo: 'Long press for delete', completed: false},
   ])
+ 
   const [text, settext] = useState('')
 
-  // Traer datos de una API jsonplacerholder
-  // const fetchData = async() => {
-  //   const response = await axios.get('https://jsonplaceholder.typicode.com/posts')
-  //   const res = await response.data
-  //   setdata(res)
-  //   setloading(false)
-  // }
   const changeText = (val) =>{
     settext(val)
   }
-  const addTodo = (todo) => {
-    const existsTodo = todos.find(x => x.todo === todo) //Search todo typed in todo list
-    if(!existsTodo){
-      settodos(todos.concat({todo: todo, completed:false})) //If todo exists don't create todo
-      Keyboard.dismiss() //If todo don't exists, create todo, clear textinput and keyboard down
-      settext('')
-    }else {
-      alert('This todo is already exists')
-      return
-    }
+  // const addTodo = (todo) => {
+  //   if(!todo){
+  //     alert('You must type a todo')
+  //     return
+  //   }
+  //   const existsTodo = todos.find(x => x.todo === todo) //Search todo typed in todo list
+  //   if(!existsTodo){
+  //     settodos(todos.concat({todo: todo, completed:false})) //If todo exists don't create todo
+  //     Keyboard.dismiss() //If todo don't exists, create todo, clear textinput and keyboard down
+  //     settext('')
+  //   }else {
+  //     alert('This todo is already exists')
+  //     return
+  //   }
+  // }
+  const fetchTodos = () => {
+    getTodos()
+    
+  }
+  const añadirTodo=(todo)=>{
+    addTodo(todo)
   }
   const toggleTodo = (id) => {
     const modifiedTodos = todos.map( x => x.todo === id ? {...x, completed: !x.completed } : x) 
@@ -55,7 +68,7 @@ export default function App() {
           } 
         />
       <TextInput placeholder='Type New Todo...' style={styles.input} onChangeText={changeText} value={text}/>
-      <Button onPress={()=> addTodo(text)}>Add Todo</Button>
+      <Button onPress={()=> añadirTodo(text)}>Add Todo</Button>
       <StatusBar style="auto" />
     </TouchableOpacity>
   );
