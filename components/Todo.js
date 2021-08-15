@@ -1,9 +1,9 @@
 import React from 'react'
 import { StyleSheet, TouchableOpacity, Text } from 'react-native'
 
-const Todo = ({ children, item, onPress, onLongPress }) => {
+const Todo = ({ children, item, onLongPress, onPress }) => {
     return(
-        <TouchableOpacity onPress={onPress} onLongPress={onLongPress} style={styles.todo}>
+        <TouchableOpacity  onPress={onPress} onLongPress={onLongPress} style={styles.todo}>
         {item.completed
             ?<Text style={styles.todoCompleted}>{children}</Text>
             :<Text style={styles.todoUncompleted}>{children}</Text>

@@ -1,10 +1,10 @@
-import React, {useState, useEffect} from 'react';
 import * as SQLite from 'expo-sqlite';
+import { useEffect ,useState } from 'react';
 
 const db = SQLite.openDatabase('sqliteApp');
 
-
- export const createTable = () => {
+   
+export const createTable = () => {
     db.transaction((tx)=>{
         tx.executeSql(
             "CREATE TABLE IF NOT EXISTS todos (todo TEXT PRIMARY KEY, completed INTEGER )", 
@@ -16,45 +16,36 @@ const db = SQLite.openDatabase('sqliteApp');
     res=>{})
 }
 
-export const addTodo = (todo) => {
-    let completed = 0
+export const deleteTodo = (id) => {
     db.transaction((tx)=>{
-        tx.executeSql(
-            "INSERT INTO todos (todo,completed) VALUES (?,?)",
-            [todo,completed],
-            (tx, res)=>{getTodos()},
-            (err)=>{console.log(err)})
-        }, 
+      tx.executeSql(
+        "DELETE FROM todos WHERE todo=?;",
+        [id],
+        (tx, res)=>{console.log(res)},
+        (err)=>{console.log(err)})
+        },
     err=>{console.log(err)},
     res=>{})
 }
 
-export const getTodos = () =>{ ///HAY ALGUN PROBLEMA A LA HORA DE DEVOLVER Y SETEAR LOS DATOS EN EL ESTADO
-    const [list, setlist] = useState([])
-    const fetchTodos=db.transaction((tx)=>{
+export const changeTodo = (item) => {
+    let status = " "
+    if(item.completed == false){
+        status = "1" 
+    }else{
+        status = "0"
+    }
+    db.transaction((tx)=>{
         tx.executeSql(
-            "SELECT * FROM todos",
-            [],
+            "UPDATE todos SET completed=? WHERE todo=?;",
+            [status,item.todo],
             (tx, res)=>{
-                const leng = res.rows.length
-                if(leng > 0){
-                    const listTodo =[]
-                    for(let i=0; i<leng; i++){
-                        let item = res.rows.item(i)
-                        const todo = {todo: item.todo, completed: item.completed}
-                        listTodo.push(todo)
-                    }
-                setlist(listTodo)
-                }
+                console.log(res)
             },
             (err)=>{console.log(err)}
         )
     },
     err=>{console.log(err)},
     res=>{})
-
-    useEffect(() => {
-        fetchTodos()
-    },[])
-    return list
 }
+
